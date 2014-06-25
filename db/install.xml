@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/studyplan/db" VERSION="20140108" COMMENT="XMLDB file for Moodle mod/studyplan"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="studyplan" COMMENT="Studyplan is a moodle activity for showing a dynamic course plan document based on quiz answers">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course studyplan activity belongs to" PREVIOUS="id" NEXT="quiz"/>
+        <FIELD NAME="quiz" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Quiz studyplan activity belongs to" PREVIOUS="course" NEXT="name"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Name field for moodle instances" PREVIOUS="quiz" NEXT="intro"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Editable introduction of the studyplan activity" PREVIOUS="name" NEXT="introformat"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field MOODLE, HTML, MARKDOWN etc" PREVIOUS="intro" NEXT="standardblock"/>
+        <FIELD NAME="standardblock" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Include the standard instructions block" PREVIOUS="introformat" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="standardblock" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="studyplan_blocks" COMMENT="Studyplan block is a chunk of content for a studyplan">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="studyplan"/>
+        <FIELD NAME="studyplan" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course studyplan activity belongs to" PREVIOUS="id" NEXT="sequence"/>
+        <FIELD NAME="sequence" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Display ordering" PREVIOUS="studyplan" NEXT="type"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Type of this blocks content 0-evaluatabled block, 1-heading, 2-text content" PREVIOUS="sequence" NEXT="lookuptype"/>
+        <FIELD NAME="lookuptype" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Kind of lookup to perfom when evaluating block" PREVIOUS="type" NEXT="keyname"/>
+        <FIELD NAME="keyname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Key or name to match via lookup" PREVIOUS="lookuptype" NEXT="operator"/>
+        <FIELD NAME="operator" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Operator to apply" PREVIOUS="keyname" NEXT="value"/>
+        <FIELD NAME="value" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Value to compare to" PREVIOUS="operator" NEXT="label"/>
+        <FIELD NAME="label" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"  COMMENT="Name or text label to use when displaying" PREVIOUS="value" NEXT="content"/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Content for text content blocks" PREVIOUS="label" NEXT="contentformat"/>
+        <FIELD NAME="contentformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field MOODLE, HTML, MARKDOWN etc" PREVIOUS="content" NEXT="activity"/>
+        <FIELD NAME="activity" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Related activity to link the label to" PREVIOUS="contentformat" NEXT="completionactivity"/>
+        <FIELD NAME="completionactivity" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Activity to check if this has been compelted" PREVIOUS="activity" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="completionactivity" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="studyplan" UNIQUE="false" FIELDS="studyplan"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="studyplan_overrides" COMMENT="Override for a block assignment in a study plan for a particular student">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="studyplan"/>
+        <FIELD NAME="studyplan" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course studyplan override belongs to" PREVIOUS="id" NEXT="block"/>
+        <FIELD NAME="block" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Studyplan_block id" PREVIOUS="studyplan" NEXT="user"/>
+        <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id of student" PREVIOUS="block" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="user" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="studyplan" UNIQUE="false" FIELDS="studyplan"/>
+        <INDEX NAME="user" UNIQUE="false" FIELDS="user"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

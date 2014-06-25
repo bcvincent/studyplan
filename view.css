@@ -1,0 +1,56 @@
+/* css for displaying the studyplay when viewed by a student */
+/* g:009944 b:2e5eb3 */
+
+.studyplan-no-quiz { margin-top:30px; }
+.studyplan-legend { margin-top:30px; }
+.studyplan-example { margin-right:30px; }
+.studyplan-block { 
+	background-image: url("/mod/studyplan/pix/check.gif");
+	background-repeat: no-repeat;
+	background-position: 0px, 0px; 
+	padding-left:20px; 
+	color: #000;
+}
+.studyplan-example.studyplan-block-assigned { 
+	background-image: url("/mod/studyplan/pix/green.gif");
+	color: #009944;
+}
+.studyplan-example.studyplan-block-teacher-assigned { 
+	background-image: url("/mod/studyplan/pix/blue.gif");
+	color: #2e5eb3;
+}
+
+.studyplan-block { color: #000; }
+.studyplan-block a { color: #000; }
+.studyplan-block a:hover { color: #f00; }
+
+.studyplan-block-assigned { color: #009944; background-image: none; }
+.studyplan-block-assigned a { color: #009944; }
+.studyplan-block-assigned a:hover { color: #f00; }
+
+.studyplan-block-teacher-assigned { color: #2e5eb3; background-image: none; }
+.studyplan-block-teacher-assigned a { color: #2e5eb3; }
+.studyplan-block-teacher-assigned a:hover { color: #f00; }
+
+.studyplan-block-completed { 
+	background-image: url("/mod/studyplan/pix/check.gif");
+	background-repeat: no-repeat;
+	background-position: 0px, 0px; 
+	padding-left:20px; 
+	color: #000;
+}
+.studyplan-block-completed a { color: #000; }
+.studyplan-block-completed a:hover { color: #f00; }
+
+#studyplan-review-student-selector {
+	width:170px;
+}
+#studyplan-review-left-column select[name="group"] {
+	width:170px;
+}
+#studyplan-review-left-column {
+	width:190px;
+}
+.studyplan-assign-button {
+	width:70px;
+}

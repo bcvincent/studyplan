@@ -285,7 +285,7 @@ class mod_studyplan_mod_form extends moodleform_mod {
         // Adding the standard "name" field
         #$mform->addElement('text', 'name', get_string('studyplanname', 'studyplan'), array('size'=>'64'));
         #note: get_string('studyplanname', 'studyplan') does internationalization lookup
-        $mform->addElement('text', 'name', 'Studyplan Name', array('size'=>'64'));
+        $mform->addElement('text', 'name', get_string('studyplanname', 'studyplan'), array('size'=>'64'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -298,8 +298,9 @@ class mod_studyplan_mod_form extends moodleform_mod {
         // Adding the standard "intro" and "introformat" fields
         $this->add_intro_editor();
         
-        $mform->addElement('advcheckbox', 'standardblock', 'Standard block on study plan page', 'Include the standard details and description block on the study plan page', array('group' => 1), array(0, 1));
-
+        # $mform->addElement('advcheckbox', 'standardblock', 'Standard block on study plan page', 'Include the standard details and description block on the study plan page', array('group' => 1), array(0, 1));
+        $mform->addElement('advcheckbox', 'standardblock', get_string('standardblock', 'studyplan'), get_string('standardblockinstruction', 'studyplan'), array('group' => 1), array(0, 1));
+        
         //-------------------------------------------------------------------------------
         // Adding the rest of studyplan settings, spreeading all them into this fieldset
         // or adding more fieldsets ('header' elements) if needed for better logic

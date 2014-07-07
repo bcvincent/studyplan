@@ -170,8 +170,8 @@ if (groups_get_course_groupmode($course)) {
 	echo "</select><br> ";
 }
 
-if ($groupid<1) { echo "All "; }
-echo "Participants<br>\n";
+if ($groupid<1) { echo get_string('all', 'studyplan'); }
+echo get_string('participantsplural', 'studyplan') . "<br>\n";
 echo "<select size=\"35\" id=\"studyplan-review-student-selector\" onchange=\"studyplanStudentSelectorChanged(this)\">";
 if (empty($groups)) {
 	$participants=array();
@@ -189,7 +189,9 @@ echo "</select>";
 echo "</td>";
 
 echo "<td id='studyplan-review-right-column' valign='top'>";
-$heading="No Student Selected";
+
+$heading= get_string('nostudentselected', 'studyplan');
+
 if (isset($STUDENT)) { 
 	$heading="$studyplan->name for $STUDENT->firstname $STUDENT->lastname";
 }
@@ -211,7 +213,7 @@ if (isset($STUDENT)) {
 		$url = new moodle_url('/mod/quiz/view.php', array('q' => $studyplan->quiz));
 		$quiz_name = htmlentities(sp_get_quiz_name($studyplan->quiz));
 		print "<h2 class=\"studyplan-header studyplan-no-quiz\">".
-				"You have not finished the <a href=\"$url\">$quiz_name</a>.".
+				get_string('youhavenotfinished', 'studyplan')" <a href=\"$url\">$quiz_name</a>.".
 				"</h2>"; 
 	} else {
 		$lastfinishedattempt = end($attempts);

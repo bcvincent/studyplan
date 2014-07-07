@@ -42,3 +42,12 @@ $string['pluginname'] = 'Study Plan';
 $string['studyplan:review'] = 'Review student\'s study plans';
 $string['studyplan:assign'] = 'Assign activities to student\'s study plans';
 $string['studyplan:showallgroups'] = 'Show all groups in the study plan review pages';
+
+#index
+$string['nostudyplans'] = 'There are no study plans.';
+$string['nostudentselected'] = 'No Student Selected';
+
+#review
+$string['all'] = 'All';
+$string['participant'] = 'Participant';
+$string['participantplural'] = 'Participants';

@@ -56,3 +56,7 @@ $string['youhavenotfinished'] = 'You have not finished the' ;
 #mod_form
 $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';
+
+#view
+
+$string['specifyiderror']'You must specify a course_module ID or an instance ID';

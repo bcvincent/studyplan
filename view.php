@@ -48,7 +48,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $studyplan->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('studyplan', $studyplan->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    error(get_string('specifyiderror', 'studyplan'));
 }
 
 require_login($course, true, $cm);
@@ -84,7 +84,7 @@ if (empty($attempts)) {
 	$url = new moodle_url('/mod/quiz/view.php', array('q' => $studyplan->quiz));
 	$quiz_name = htmlentities(sp_get_quiz_name($studyplan->quiz));
 	print "<h2 class=\"studyplan-header studyplan-no-quiz\">".
-			"You have not finished the <a href=\"$url\">$quiz_name</a>.".
+		    get_string('youhavenotfinished', 'studyplan') . " <a href=\"$url\">$quiz_name</a>.".
 			"</h2>"; 
 } else {
 	$lastfinishedattempt = end($attempts);

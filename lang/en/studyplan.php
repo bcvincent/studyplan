@@ -43,20 +43,12 @@ $string['studyplan:review'] = 'Review student\'s study plans';
 $string['studyplan:assign'] = 'Assign activities to student\'s study plans';
 $string['studyplan:showallgroups'] = 'Show all groups in the study plan review pages';
 
-#index
 $string['nostudyplans'] = 'There are no study plans.';
 $string['nostudentselected'] = 'No Student Selected';
-
-#review
 $string['all'] = 'All';
 $string['participant'] = 'Participant';
 $string['participantplural'] = 'Participants';
 $string['youhavenotfinished'] = 'You have not finished the' ;
-
-#mod_form
 $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';
-
-#view
-
 $string['specifyiderror']'You must specify a course_module ID or an instance ID';

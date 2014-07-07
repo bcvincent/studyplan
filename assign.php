@@ -48,7 +48,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $studyplan->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance('studyplan', $studyplan->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    error(get_string('specifyiderror', 'studyplan'));
 }
 if ($studentid) {
 	$STUDENT  = $DB->get_record('user', array('id' => $studentid), '*', MUST_EXIST);

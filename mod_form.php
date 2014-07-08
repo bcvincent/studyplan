@@ -121,10 +121,18 @@ class mod_studyplan_mod_form extends moodleform_mod {
         }
 	    $mform->addElement('html', '<tr class="studyplan-header">
 	    							<th style="text-align:left">'.$type_or_new.'</th>
-	    							<th style="text-align:left">Label</th>
-	    							<th style="text-align:left">Evaluate</th>
-	    							<th style="text-align:left">Assignment</th>
-	    							<th style="text-align:left">Completion</th>
+	    							<th style="text-align:left">
+	    							    ' . get_string('label', 'studyplan') . '
+	    							</th>
+	    							<th style="text-align:left">
+	    							    ' . get_string('evaluate', 'studyplan') . '
+	    							</th>
+	    							<th style="text-align:left">
+	    							    ' . get_string('assignment', 'studyplan') . '
+	    							</th>
+	    							<th style="text-align:left">
+	    							    ' . get_string('completion', 'studyplan') . '
+	    							</th>
 	    							<th style="text-align:left">&nbsp;</th>
 	    							</tr>');
 	}
@@ -249,7 +257,7 @@ class mod_studyplan_mod_form extends moodleform_mod {
         if ($this->current_block_number==0) {
 	        #no rows -- drop in an empty result
 	        $mform->addElement('html', '<tr class="studyplan-block-empty" style="background-color:orange">');
-	        $mform->addElement('html', '<td colspan="6">No Study Plan Blocks</td></tr>');
+	        $mform->addElement('html', '<td colspan="6">' . get_string('nostudyplanblocks', 'studyplan') . ' </td></tr>');
 		       
         }
         $mform->addElement('html', '</tbody>');

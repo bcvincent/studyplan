@@ -44,6 +44,7 @@ $string['studyplan:assign'] = 'Assign activities to student\'s study plans';
 $string['studyplan:showallgroups'] = 'Show all groups in the study plan review pages';
 
 $string['nostudyplans'] = 'There are no study plans.';
+$string['nostudyplanblocks'] = 'No Study Plan Blocks';
 $string['nostudentselected'] = 'No Student Selected';
 $string['all'] = 'All';
 $string['participant'] = 'Participant';
@@ -51,4 +52,16 @@ $string['participantplural'] = 'Participants';
 $string['youhavenotfinished'] = 'You have not finished the' ;
 $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';
-$string['specifyiderror']'You must specify a course_module ID or an instance ID';
+$string['specifyiderror'] = 'You must specify a course_module ID or an instance ID';
+
+#mod_form
+$string['label'] = 'Label';
+$string['evaluate'] = 'Evaluate';
+$string['assignment'] = 'Assignment';
+$string['completion'] = 'Completion';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';
+$string[''] = '';

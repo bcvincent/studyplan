@@ -54,7 +54,7 @@ $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';
 $string['specifyiderror'] = 'You must specify a course_module ID or an instance ID';
 
-#mod_form
+$string['groups'] = 'Groups';
 $string['label'] = 'Label';
 $string['evaluate'] = 'Evaluate';
 $string['assignment'] = 'Assignment';

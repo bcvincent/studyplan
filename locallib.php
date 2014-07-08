@@ -96,31 +96,31 @@ function sp_get_operators_hash() {
 
 function sp_get_types_hash() {
 	return array(
-		'1'	=>"Heading",
-		'0'	=>"Evaluate"
+		'1'	=> get_string('heading', 'studyplan'),
+		'0'	=> get_string('evaluate', 'studyplan')
 	);
 }
 
 
 function sp_get_full_lookuptypes_hash() {
 	return array(
-		'text'		=>"Text",
-		'summary'	=>"Summary",
-		'mark'		=>"Mark",
-		'category'	=>"Category",
-		'tag'		=>"Tag",
-		'question'	=>"Question",
-		'questions_all'			=>"All Questions",
-		'questions_correct'		=>"Correct Questions",
-		'questions_incorrect'	=>"Incorrect Questions",
-		'response'	=>"Response"
+		'text'		              => get_string('text', 'studyplan'), // "Text",
+		'summary'	              => get_string('summary', 'studyplan'), // "Summary",
+		'mark'		              => get_string('mark', 'studyplan'), // "Mark",
+		'category'	              => get_string('category', 'studyplan'), // "Category",
+		'tag'		              => get_string('tag', 'studyplan'), // "Tag",
+		'question'	              => get_string('question', 'studyplan'), // "Question",
+		'questions_all'			  => get_string('allquestions', 'studyplan'), // "All Questions",
+		'questions_correct'		  => get_string('correctquestions', 'studyplan'), // "Correct Questions",
+		'questions_incorrect'	  => get_string('incorrectquestions', 'studyplan'), // "Incorrect Questions",
+		'response'	              => get_string('response', 'studyplan'), //"Response"
 	);
 }
 
 
 function sp_get_lookuptypes_hash() {
 	return array(
-		'tag'		=>"Tag"
+		'tag'		              => get_string('tag', 'studyplan'), // "Tag"
 	);
 }
 
@@ -235,9 +235,15 @@ function sp_render_legend() {
 	return '
 		<table class="studyplan-legend">
 			<tr>
-				<td><div class="studyplan-block studyplan-example">Completed</div></td>
-				<td><div class="studyplan-block studyplan-block-assigned studyplan-example">Assigned by Test</div></td>
-				<td><div class="studyplan-block studyplan-block-teacher-assigned studyplan-example">Assigned by Teacher</div></td>
+				<td><div class="studyplan-block studyplan-example">
+				    ' . get_string('completed', 'studyplan') . '
+				</div></td>
+				<td><div class="studyplan-block studyplan-block-assigned studyplan-example">
+				    ' . get_string('assignedbytest', 'studyplan') . '
+				</div></td>
+				<td><div class="studyplan-block studyplan-block-teacher-assigned studyplan-example">
+				    ' . get_string('assignedbyteacher', 'studyplan') . '
+				</div></td>
 			</tr>
 		</table>
 	';

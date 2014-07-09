@@ -204,7 +204,7 @@ if (isset($STUDENT)) {
 	
 	if ($studyplan->standardblock) {
 		echo '<div class="studyplan-standard">';
-		include(dirname(__FILE__).'/lang/en/intro.php');
+		include(dirname(__FILE__).'intro.php');
 		echo '</div>';
 	}
 	

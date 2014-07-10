@@ -124,12 +124,13 @@ function sp_get_lookuptypes_hash() {
 	);
 }
 
-function sp_presummarize($attemptobj) {
+function sp_presummarize($attemptobj,$questionids) {
 	$presummary=array();
 	$slots = $attemptobj->get_slots();
 	foreach ($slots as $slot) {
 		if ($attemptobj->is_real_question($slot)) {
-			$tags=sp_get_tags_for_question($slot);
+			$qid=sp_get_questionid_for_slot($questionids,$slot);
+			$tags=sp_get_tags_for_question($qid);
 			$mark=$attemptobj->get_question_mark($slot);
 			foreach ($tags as $tag) {
 				$presummary["mark"]["tag"][$tag]+=$mark;
@@ -138,11 +139,9 @@ function sp_presummarize($attemptobj) {
 					$presummary["count"]["tag"][$tag]++;
 				}
 			}
-			#$s=$attemptobj->get_question_status($slot,true);
-			#$category=
 		}
 	}
-	#might also be useful: get_question_status, others in quiz/attemptlib.php l# 980+
+	#might also be useful: get_question_status, others in mod/quiz/attemptlib.php l# 980+
 	return $presummary;
 }
 
@@ -249,6 +248,24 @@ function sp_render_legend() {
 	';
 }
 
+function sp_get_questionids_from_attempt($attemptobj) {
+	# based on mod/quiz/attemptlib.php - line 91
+	$questionids=quiz_questions_in_quiz($attemptobj->get_quiz()->questions);
+	if ($questionids) { 
+		$questionids = explode(',', $questionids);
+	} else {
+		$questionids = array(); 
+	}
+	return $questionids;
+}
+
+function sp_get_questionid_for_slot($questions,$slot) {
+	//based on mod/quiz/attemptlib.php - line 91
+	$offset_slot=intval($slot)-1;
+	if ($offset_slot<0) { return 0; }
+	if ($offset_slot>=count($questions)) { return 0; }
+	return $questions[$offset_slot];
+}
 
 function sp_get_tags_for_question($qid) {
 	global $DB;

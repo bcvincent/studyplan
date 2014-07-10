@@ -89,7 +89,8 @@ if (empty($attempts)) {
 } else {
 	$lastfinishedattempt = end($attempts);
 	$attemptobj = quiz_attempt::create($lastfinishedattempt->id);
-	$presummary=sp_presummarize($attemptobj);
+	$questionids = sp_get_questionids_from_attempt($attemptobj);
+	$presummary=sp_presummarize($attemptobj,$questionids);
 	echo sp_render_legend();
 	echo sp_render_block($studyplan->id,$presummary);
 }

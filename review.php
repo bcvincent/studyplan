@@ -213,7 +213,7 @@ if (isset($STUDENT)) {
 		$url = new moodle_url('/mod/quiz/view.php', array('q' => $studyplan->quiz));
 		$quiz_name = htmlentities(sp_get_quiz_name($studyplan->quiz));
 		print "<h2 class=\"studyplan-header studyplan-no-quiz\">".
-				get_string('youhavenotfinished', 'studyplan')" <a href=\"$url\">$quiz_name</a>.".
+				get_string('youhavenotfinished', 'studyplan')." <a href=\"$url\">$quiz_name</a>.".
 				"</h2>"; 
 	} else {
 		$lastfinishedattempt = end($attempts);

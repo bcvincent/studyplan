@@ -43,5 +43,16 @@ function xmldb_studyplan_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
     
+    if ($oldversion < 2014071400) {
+        // Change field 'name' column to default null
+        $table = new xmldb_table('studyplan');
+        $field = new xmldb_field('name', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'quiz');
+
+        // apply the change if the field is here to fix
+        if ($dbman->field_exists($table, $field)) { $dbman->change_field_type($table, $field); }
+        upgrade_mod_savepoint(true, 2014071400, 'studyplan');
+
+    }
+    
     return true;
 }

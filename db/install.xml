@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/studyplan/db" VERSION="20140108" COMMENT="XMLDB file for Moodle mod/studyplan"
+<XMLDB PATH="mod/studyplan/db" VERSION="20140714" COMMENT="XMLDB file for Moodle mod/studyplan"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -9,7 +9,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="course"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course studyplan activity belongs to" PREVIOUS="id" NEXT="quiz"/>
         <FIELD NAME="quiz" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Quiz studyplan activity belongs to" PREVIOUS="course" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Name field for moodle instances" PREVIOUS="quiz" NEXT="intro"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Name field for moodle instances" PREVIOUS="quiz" NEXT="intro"/>
         <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Editable introduction of the studyplan activity" PREVIOUS="name" NEXT="introformat"/>
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field MOODLE, HTML, MARKDOWN etc" PREVIOUS="intro" NEXT="standardblock"/>
         <FIELD NAME="standardblock" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Include the standard instructions block" PREVIOUS="introformat" NEXT="timecreated"/>

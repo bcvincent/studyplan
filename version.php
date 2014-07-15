@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $module->release   = 'v0.8.8';
 $module->maturity  = MATURITY_BETA;
-$module->version   = 2014071100;      // The current module version (Date: YYYYMMDDXX)
+$module->version   = 2014071400;      // The current module version (Date: YYYYMMDDXX)
 $module->requires  = 2013050100;      // Requires this Moodle version
 $module->cron      = 0;               // Period for cron to check this module (secs)
 $module->component = 'mod_studyplan'; // To check on upgrade, that module sits in correct place

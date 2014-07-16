@@ -1,8 +1,3 @@
-=== ACTIVE DEVELOPMENT ===
-
-Heads up! This plugin is still under very active development.
-Use with care.
-
 === Study Plan Module ===
 
 The Study Plan Module v 1.0.0 (2014071600) is a 

@@ -5,7 +5,7 @@ Use with care.
 
 === Study Plan Module ===
 
-The Study Plan Module v 0.8.8 (2014071100) is a 
+The Study Plan Module v 1.0.0 (2014071600) is a 
 Moodle module plugin designed for use with 
 Moodle v 2.5+ (2013050100).
 
@@ -94,3 +94,4 @@ Moodle v 2.5+ (2013050100).
 0.8.8 Major bug fix: removed unused API stub functions that were being called,
       replaced tag pulls to use question ids, changed index.xml to no use empty
       char default
+1.0.0 Minor text string tweek, and version number bump to 1.0.0

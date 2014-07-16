@@ -29,7 +29,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->release   = 'v0.8.8';
+$module->release   = 'v1.0.0';
 $module->maturity  = MATURITY_BETA;
 $module->version   = 2014071600;      // The current module version (Date: YYYYMMDDXX)
 $module->requires  = 2013050100;      // Requires this Moodle version

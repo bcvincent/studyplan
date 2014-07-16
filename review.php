@@ -150,7 +150,7 @@ if (groups_get_course_groupmode($course)) {
 	echo get_string('groups', 'studyplan') . "<br>\n";
 	echo "<select name=\"group\" onchange=\"studyplanGroupSelectorChanged(this)\">";
 	if ( has_capability('mod/studyplan:showallgroups', context_module::instance($PAGE->cm->id)) ) {
-		print "<option value=\"0\">All Participants</option>\n";
+		print "<option value=\"0\">".get_string('allparticipants', 'studyplan')."</option>\n";
 		$groups=groups_get_all_groups($course->id);
 	} else {
 		$groups=sp_utility_nestedArrayCollapse(groups_get_user_groups($course->id));
@@ -170,8 +170,12 @@ if (groups_get_course_groupmode($course)) {
 	echo "</select><br> ";
 }
 
-if ($groupid<1) { echo get_string('all', 'studyplan'); }
-echo get_string('participantsplural', 'studyplan') . "<br>\n";
+if ($groupid<1) { 
+	echo get_string('allparticipants', 'studyplan'); 
+} else {
+	echo get_string('participantplural', 'studyplan');
+}
+echo "<br>\n";
 echo "<select size=\"35\" id=\"studyplan-review-student-selector\" onchange=\"studyplanStudentSelectorChanged(this)\">";
 if (empty($groups)) {
 	$participants=array();

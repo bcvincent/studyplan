@@ -49,6 +49,7 @@ $string['nostudentselected'] = 'No Student Selected';
 $string['all'] = 'All';
 $string['participant'] = 'Participant';
 $string['participantplural'] = 'Participants';
+$string['allparticipants'] = 'All Participants';
 $string['youhavenotfinished'] = 'You have not finished the' ;
 $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';

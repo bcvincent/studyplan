@@ -373,8 +373,8 @@ function sp_get_activity_completed($activityid=0) {
 		return true;
 	} else {
 		#http://docs.moodle.org/dev/Course_completion & http://docs.moodle.org/dev/Activity_completion_API
-		#lib/completionlib.php
-		$comp_data=$completion->get_data($mod, $user_id);
+		#lib/completionlib.php - line # 907 - get_data
+		$comp_data=$completion->get_data($mod, false, $user_id);
 		if (empty($comp_data)) { return false; }
 		if ($comp_data->completionstate>=COMPLETION_COMPLETE) { return true; }
 	}

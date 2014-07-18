@@ -75,7 +75,7 @@ if ($studyplan->intro) { // Conditions to show the intro can change to look for 
 
 if ($studyplan->standardblock) {
 	echo '<div class="studyplan-standard">';
-	include(dirname(__FILE__).'intro.php');
+	include(dirname(__FILE__).'/intro.php');
 	echo '</div>';
 }
 

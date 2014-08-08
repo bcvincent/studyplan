@@ -54,5 +54,24 @@ function xmldb_studyplan_upgrade($oldversion) {
 
     }
     
+    if ($oldversion < 2014080700) {
+    	
+        // Create the studyplan_progress table
+        if (!$dbman->table_exists('studyplan_progress')) {
+			$table = new xmldb_table('studyplan_progress');
+			$table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+			$table->add_field('studyplan', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'id');
+			$table->add_field('user', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'studyplan');
+			$table->add_field('percent', XMLDB_TYPE_NUMBER, '10,5', null, XMLDB_NOTNULL, null, '0', 'user');
+			$table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'percent');
+			$table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'timecreated');
+			$table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+			$table->add_index('studyplan', XMLDB_INDEX_NOTUNIQUE, array('studyplan'));
+			$table->add_index('user', XMLDB_INDEX_NOTUNIQUE, array('user'));
+			$dbman->create_table($table);
+		}
+        upgrade_mod_savepoint(true, 2014080700, 'studyplan');
+    }
+    
     return true;
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/studyplan/db" VERSION="20140714" COMMENT="XMLDB file for Moodle mod/studyplan"
+<XMLDB PATH="mod/studyplan/db" VERSION="20140807" COMMENT="XMLDB file for Moodle mod/studyplan"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -55,6 +55,23 @@
         <FIELD NAME="block" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Studyplan_block id" PREVIOUS="studyplan" NEXT="user"/>
         <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id of student" PREVIOUS="block" NEXT="timecreated"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="user" NEXT="timemodified"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="studyplan" UNIQUE="false" FIELDS="studyplan"/>
+        <INDEX NAME="user" UNIQUE="false" FIELDS="user"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="studyplan_progress" COMMENT="How much progress in a study plan for a particular student">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="studyplan"/>
+        <FIELD NAME="studyplan" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course studyplan override belongs to" PREVIOUS="id" NEXT="user"/>
+        <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id of student" PREVIOUS="studyplan" NEXT="percent"/>
+        <FIELD NAME="percent" TYPE="number" LENGTH="10" DECIMALS="5" NOTNULL="true" DEFAULT="0.0" SEQUENCE="false" COMMENT="Percent complete" PREVIOUS="user" NEXT="timecreated"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="percent" NEXT="timemodified"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timecreated"/>
       </FIELDS>
       <KEYS>

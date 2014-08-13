@@ -40,6 +40,7 @@ class restore_studyplan_activity_structure_step extends restore_activity_structu
         $paths[] = new restore_path_element('studyplan_block', '/activity/studyplan/blocks/block');
         if ($userinfo) {
             $paths[] = new restore_path_element('studyplan_override', '/activity/studyplan/overrides/override');
+            $paths[] = new restore_path_element('studyplan_progress', '/activity/studyplan/progresses/progress');
         }
 
         // Return the paths wrapped into standard activity structure
@@ -86,6 +87,21 @@ class restore_studyplan_activity_structure_step extends restore_activity_structu
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
         $newitemid = $DB->insert_record('studyplan_overrides', $data);
+        // No need to save this mapping as far as nothing depend on it
+        // (child paths, file areas nor links decoder)
+    }
+
+    protected function process_studyplan_progress($data) {
+        global $DB;
+
+        $data = (object)$data;
+
+        $data->studyplan = $this->get_new_parentid('studyplan');
+        $data->user = $this->get_mappingid('user', $data->user);
+        
+        $data->timemodified = $this->apply_date_offset($data->timemodified);
+
+        $newitemid = $DB->insert_record('studyplan_progress', $data);
         // No need to save this mapping as far as nothing depend on it
         // (child paths, file areas nor links decoder)
     }

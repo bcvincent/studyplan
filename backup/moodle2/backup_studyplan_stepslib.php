@@ -73,12 +73,24 @@ class backup_studyplan_activity_structure_step extends backup_activity_structure
 			"timecreated",
 			"timemodified"));
  
+        $progresses = new backup_nested_element('progresses');
+ 
+        $progress = new backup_nested_element('progress', array('id'), array(
+            "studyplan",
+            "user",
+            "percent",
+			"timecreated",
+			"timemodified"));
+ 
         // Build the tree
         $studyplan->add_child($blocks);
         $blocks->add_child($block);
  
         $studyplan->add_child($overrides);
         $overrides->add_child($override);
+        
+        $studyplan->add_child($progresses);
+        $progresses->add_child($progress);
  
         // Define sources
         $studyplan->set_source_table('studyplan', array('id' => backup::VAR_ACTIVITYID));
@@ -95,6 +107,10 @@ class backup_studyplan_activity_structure_step extends backup_activity_structure
             $override->annotate_ids('studyplan', 'studyplan');
             $override->annotate_ids('studyplan_block', 'block');
             $override->annotate_ids('user', 'user');
+            
+            $progress->set_source_table('studyplan_progress', array('studyplan' => '../../id'));
+            $progress->annotate_ids('studyplan', 'studyplan');
+            $progress->annotate_ids('user', 'user');
         }
  
         // Define id annotations

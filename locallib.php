@@ -150,16 +150,20 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 	$cms=get_fast_modinfo($COURSE)->get_cms();
 	
 	$out="";
+	
+	$sp_progress = array();
+	
 	foreach (sp_get_blocks($studyplanid) as $block) {
 		if ($block->type==STUDYPLAN_BLOCKS_TYPES_HEADER) {
 			$out.='<h2 class="studyplan-header">'.htmlentities($block->label)."</h2>";
 		} elseif ($block->type==STUDYPLAN_BLOCKS_TYPES_EVALUATE) {
+			$sp_progress[] = 1;
 			$mark = 0.0;
 			$value = 0.0;
 			$total = 0.0;
 			$count = 0.0;
 			$perc = 0.0;
-			
+					
 			if ($block->lookuptype=="tag") {
 				$value = floatval($block->value);
 				$mark = 0.0;
@@ -184,6 +188,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 			}
 				
 			$style="";
+			
 			//assigned
 			if (($block->operator=="ltp") && ($perc<$value)) {
 				$style.="studyplan-block-assigned ";
@@ -202,6 +207,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 			} else if (($block->operator=="gte") && ($mark>=$value)) {
 				$style.="studyplan-block-assigned ";
 			}
+			
 			//teacher-assigned
 			$assign_label="Assign";
 			$assigned_data="0";
@@ -210,10 +216,17 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 				$assign_label="Remove";
 				$assigned_data="1";
 			}
-			//completed
+			
+			//completed	
 			if (sp_get_activity_completed($block->completionactivity)) {
 				$style.="studyplan-block-completed ";
 			}
+			
+			if ( ( $style != '' ) && ( !stristr($style, 'studyplan-block-completed')) ) {
+    			// this counts as completed
+    			$sp_progress[ count($sp_progress)-1 ]=0;
+			}			
+			
 			$url = $cms[$block->activity]->get_url()->out();
 			$out.='<div class="studyplan-block '.$style.'">';
 			if ($assignbuttons) {
@@ -226,6 +239,8 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 			$out.='</div>';
 		}
 	}
+	
+	$out.= '<div><h2>Your completion percentage: ' . (array_sum($sp_progress) / count($sp_progress)) * 100 . '</h2></div>';
 	
 	return $out;
 }
@@ -310,6 +325,7 @@ function sp_get_block_assigned($blockid,$studyplanid) {
 	$conditions['studyplan']=$studyplanid;
 	$conditions['user']=$user_id;
 	$results=$DB->get_record('studyplan_overrides',$conditions);
+
 	if ($results!==false) {
 		return true;
 	}
@@ -367,6 +383,9 @@ function sp_get_activity_completed($activityid=0) {
 	$cms=get_fast_modinfo($COURSE)->get_cms();
 	$mod=$cms[$activityid];
 	$completion = new completion_info($COURSE);
+
+    // echo "<br />COMPLETION: " . print_r($mod->modname, true);
+
 	if ($mod->modname=="quiz") {
 		$attempts = quiz_get_user_attempts($studyplan->quiz, $user_id, 'finished', true);
 		if (empty($attempts)) { return false; }
@@ -374,7 +393,7 @@ function sp_get_activity_completed($activityid=0) {
 	} else {
 		#http://docs.moodle.org/dev/Course_completion & http://docs.moodle.org/dev/Activity_completion_API
 		#lib/completionlib.php - line # 907 - get_data
-		$comp_data=$completion->get_data($mod, false, $user_id);
+		$comp_data=$completion->get_data($mod, false, $user_id);	
 		if (empty($comp_data)) { return false; }
 		if ($comp_data->completionstate>=COMPLETION_COMPLETE) { return true; }
 	}

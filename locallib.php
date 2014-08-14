@@ -147,11 +147,11 @@ function sp_presummarize($attemptobj,$questionids) {
 
 function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 	global $COURSE;
+	global $sp_progress;
+	
 	$cms=get_fast_modinfo($COURSE)->get_cms();
 	
 	$out="";
-	
-	$sp_progress = array();
 	
 	foreach (sp_get_blocks($studyplanid) as $block) {
 		if ($block->type==STUDYPLAN_BLOCKS_TYPES_HEADER) {
@@ -239,8 +239,6 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 			$out.='</div>';
 		}
 	}
-	
-	$out.= '<div><h2>Your completion percentage: ' . (array_sum($sp_progress) / count($sp_progress)) * 100 . '</h2></div>';
 	
 	return $out;
 }

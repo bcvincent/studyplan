@@ -270,10 +270,9 @@ function sp_calculate_student_progress($studyplanid=null,$userid=null,$store=tru
 	global $USER, $STUDENT, $DB;
 	global $STUDENT_PROGRESS;
 	if ($studyplanid===null) { return; }
-	if ($userid===null) {
-		if (isset($USER)) { $userid=$USER->id; }
-		if (isset($STUDENT)) { $userid=$STUDENT->id; }
-		if ($userid===null) { return; }
+	if ($userid===null) { return; }
+	if ($userid!=$STUDENT->id) {
+		$STUDENT  = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 	}
 	$STUDENT_PROGRESS = array();
 	

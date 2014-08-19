@@ -301,9 +301,11 @@ function sp_store_student_progress($studyplanid=null,$userid=null,$percent=null)
 
 function sp_render_progress_header() {
 	return '
-		<h2 class="studyplan-progress-header">You have completed 
-		<span class="studyplan-progress-percent">' . sp_student_progress_as_percentage_text() . '</span> 
-		of your study plan.</h2>
+		<h2 class="studyplan-progress-header">'.
+			get_string('progressheaderprefix', 'studyplan').'
+			<span class="studyplan-progress-percent">' . sp_student_progress_as_percentage_text() . '</span> '.
+			get_string('progressheadersuffix', 'studyplan').'
+		</h2>
 		';
 }
 

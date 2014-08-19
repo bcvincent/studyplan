@@ -55,6 +55,8 @@ $string['standardblock'] = 'Standard block on study plan page';
 $string['standardblockinstruction'] = 'Include the standard details and description block on the study plan page';
 $string['specifyiderror'] = 'You must specify a course_module ID or an instance ID';
 
+$string['progressheaderprefix'] = 'You have completed';
+$string['progressheadersuffix'] = 'of your study plan.';
 $string['groups'] = 'Groups';
 $string['label'] = 'Label';
 $string['evaluate'] = 'Evaluate';

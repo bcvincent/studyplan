@@ -29,10 +29,6 @@
 .studyplan-block-assigned a { color: #009944; }
 .studyplan-block-assigned a:hover { color: #f00; }
 
-.studyplan-block-teacher-assigned { color: #2e5eb3; background-image: none; }
-.studyplan-block-teacher-assigned a { color: #2e5eb3; }
-.studyplan-block-teacher-assigned a:hover { color: #f00; }
-
 .studyplan-block-completed { 
 	background-image: url("/mod/studyplan/pix/check.gif");
 	background-repeat: no-repeat;
@@ -42,6 +38,10 @@
 }
 .studyplan-block-completed a { color: #000; }
 .studyplan-block-completed a:hover { color: #f00; }
+
+.studyplan-block-teacher-assigned { color: #2e5eb3; background-image: none; }
+.studyplan-block-teacher-assigned a { color: #2e5eb3; }
+.studyplan-block-teacher-assigned a:hover { color: #f00; }
 
 #studyplan-review-student-selector {
 	width:170px;

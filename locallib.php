@@ -266,6 +266,34 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 	return sp_render_progress_header().sp_render_legend().$out;
 }
 
+function sp_calculate_student_progress($studyplanid=null,$userid=null,$store=true,$gettext=true) {
+	global $USER, $STUDENT, $DB;
+	global $STUDENT_PROGRESS;
+	if ($studyplanid===null) { return; }
+	if ($userid===null) {
+		if (isset($USER)) { $userid=$USER->id; }
+		if (isset($STUDENT)) { $userid=$STUDENT->id; }
+		if ($userid===null) { return; }
+	}
+	$STUDENT_PROGRESS = array();
+	
+	$studyplan  = $DB->get_record('studyplan', array('id' => $studyplanid), '*', MUST_EXIST);
+	$attempts = quiz_get_user_attempts($studyplan->quiz, $userid, 'finished', true);
+	if (!empty($attempts)) { 
+		$lastfinishedattempt = end($attempts);
+		$attemptobj = quiz_attempt::create($lastfinishedattempt->id);
+		$questionids = sp_get_questionids_from_attempt($attemptobj);
+		$presummary=sp_presummarize($attemptobj,$questionids);
+		#calculate percent by rendering the block
+		sp_render_block($studyplan->id,$presummary,false,true);
+	}
+	if ($store) { 
+		sp_store_student_progress($studyplanid,$userid);
+	}
+	if (!$gettext) { return; }
+	return sp_student_progress_as_percentage_text();
+}
+
 function sp_store_student_progress($studyplanid=null,$userid=null,$percent=null) {
 	global $USER, $STUDENT, $DB;
 	if ($studyplanid===null) { return; }

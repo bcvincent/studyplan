@@ -1,6 +1,6 @@
 === Study Plan Module ===
 
-The Study Plan Module v 1.0.3 (2014081902) is a 
+The Study Plan Module v 1.1.0 (2014081903) is a 
 Moodle module plugin designed for use with 
 Moodle v 2.5+ (2013050100).
 
@@ -92,4 +92,4 @@ Moodle v 2.5+ (2013050100).
 1.0.0 Minor text string tweek, and version number bump to 1.0.0
 1.0.1 Properly call completion get_data while passing the user id
 1.0.2 Repaired path to intro for view & review
-1.0.3 Added Progress tracking (% complete, stored in table, updated with cron too)
+1.1.0 Added Progress tracking (% complete, stored in table, updated with cron too)

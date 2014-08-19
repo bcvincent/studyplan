@@ -37,6 +37,8 @@ define('STUDYPLAN_BLOCKS_TYPES_EVALUATE', 0);
 define('STUDYPLAN_BLOCKS_TYPES_HEADER', 1);
 define('STUDYPLAN_BLOCKS_TYPES_TEXT', 2);
 
+require_once($CFG->dirroot . '/mod/studyplan/locallib.php');
+
 ////////////////////////////////////////////////////////////////////////////////
 // Moodle core API                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +215,52 @@ function studyplan_print_recent_mod_activity($activity, $courseid, $detail, $mod
  * @todo Finish documenting this function
  **/
 function studyplan_cron () {
-    return true;
+	global $DB;
+	mtrace("\n  Studyplan Cron for progress updates", '');
+	
+	//get just the courses that have studyplans in them
+	$courses=get_courses();
+	$studyplans=get_all_instances_in_courses('studyplan', $courses);
+	$courses_subset=array();
+	$course_studyplans=array();
+	foreach ($studyplans as $studyplan) { 
+		$courses_subset[]=$studyplan->course;
+		if (!($course_studyplans[$studyplan->course])) {
+			$course_studyplans[$studyplan->course]=array();
+		}
+		$course_studyplans[$studyplan->course][]=$studyplan->id;
+	}
+	
+	//only do this is there are coursese with studyplan in them 
+	if ($courses_subset) {
+		//find all the users that logged in today and are in the course subset
+		$courses_subset_sql="courseid in (".join(",",$courses_subset).")";
+		
+		$last_24_hrs=time()-(24*60*60);
+		#note: using left join on the progress table so that we'll get blanks to create
+		#so check if progressid is null
+		$sql="SELECT {user_lastaccess}.*, {studyplan}.id as studyplanid, {studyplan_progress}.id as progressid, {studyplan_progress}.percent
+			FROM {user_lastaccess}
+			JOIN {studyplan}
+			ON {user_lastaccess}.courseid = {studyplan}.course
+			LEFT JOIN {studyplan_progress}
+			ON ( {studyplan_progress}.id = {studyplan_progress}.studyplan
+			AND {studyplan_progress}.user = {user_lastaccess}.userid )
+			WHERE {user_lastaccess}.$courses_subset_sql
+			AND {user_lastaccess}.timeaccess > $last_24_hrs
+		";
+		
+		$now=time();
+		$results=$DB->get_records_sql($sql);
+		mtrace("\n".count($results).' students in last 24 hours.');
+		if ($results !== false) {
+			foreach ($results as $r) {
+				sp_calculate_student_progress($r->studyplanid,$r->userid,true,false);
+			}
+		}
+	}
+	
+	mtrace('done.');
 }
 
 /**

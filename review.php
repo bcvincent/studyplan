@@ -125,7 +125,7 @@ echo "\n".
 			button.setAttribute("disabled","disabled")
 			var url="assign.php?sesskey='.sesskey().'&id='.$cm->id.'&group='.$groupid.'&student='.$studentid.'&block="+blockid
 			Y.io(url, {
-		    on:   {success: (function() {
+		    on:   {success: (function(transactionid, response, arguments) {
 					if (assigned=="1") {
 						button.removeAttribute("disabled")
 						button.setAttribute("data-assigned","0")
@@ -137,6 +137,9 @@ echo "\n".
 						button.setAttribute("value","Remove")
 						div.addClass("studyplan-block-teacher-assigned")
 					}
+					try {
+						eval(response.responseText);
+					} catch(err) { }
 			    })}
 			})
 		}

@@ -128,7 +128,7 @@ function sp_student_progress_as_decimal() {
 	return (sp_student_progress_as_percentage()/100);
 }
 
-function sp_student_progress_as_percentage_text($precision=1) {
+function sp_student_progress_as_percentage_text($precision=0) {
 	return number_format(sp_student_progress_as_percentage(),$precision).'%';
 }
 
@@ -243,9 +243,13 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 			}
 			
 			if ( ( $style != '' ) && ( !stristr($style, 'studyplan-block-completed')) ) {
-    			// this counts as completed
+    			// this counts as not completed because it isn't flagged as studyplan-block-completed
     			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
-			}			
+			}
+			if ( ( $style != '' ) && ( stristr($style, 'studyplan-block-teacher-assigned')) ) {
+    			// this counts as not completed because the teacher is forcing the assignment
+    			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
+			}	
 			
 			$url="";
 			if ($cms) { $url = $cms[$block->activity]->get_url()->out(); }

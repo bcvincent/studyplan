@@ -236,7 +236,10 @@ function studyplan_cron () {
 		//find all the users that logged in today and are in the course subset
 		$courses_subset_sql="courseid in (".join(",",$courses_subset).")";
 		
-		$last_24_hrs=time()-(24*60*60);
+		$now=time();
+		$last_24_hrs=$now-(24*60*60);
+		$last_7_hrs=$now-(7*60*60); //because cron got set to 6 hours
+		
 		#note: using left join on the progress table so that we'll get blanks to create
 		#so check if progressid is null
 		$sql="SELECT {user_lastaccess}.*, {studyplan}.id as studyplanid, {studyplan_progress}.id as progressid, {studyplan_progress}.percent
@@ -247,12 +250,11 @@ function studyplan_cron () {
 			ON ( {studyplan_progress}.id = {studyplan_progress}.studyplan
 			AND {studyplan_progress}.user = {user_lastaccess}.userid )
 			WHERE {user_lastaccess}.$courses_subset_sql
-			AND {user_lastaccess}.timeaccess > $last_24_hrs
+			AND {user_lastaccess}.timeaccess > $last_7_hrs
 		";
 		
-		$now=time();
 		$results=$DB->get_records_sql($sql);
-		mtrace("\n".count($results).' students in last 24 hours.');
+		mtrace("\n".count($results).' students in last 7 hours.');
 		if ($results !== false) {
 			foreach ($results as $r) {
 				sp_calculate_student_progress($r->studyplanid,$r->userid,true,false);

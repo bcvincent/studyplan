@@ -124,6 +124,21 @@ function sp_get_lookuptypes_hash() {
 	);
 }
 
+function sp_student_progress_as_decimal() {
+	return (sp_student_progress_as_percentage()/100);
+}
+
+function sp_student_progress_as_percentage_text($precision=1) {
+	return number_format(sp_student_progress_as_percentage(),$precision).'%';
+}
+
+function sp_student_progress_as_percentage() {
+	global $STUDENT_PROGRESS;
+	if ($STUDENT_PROGRESS===null) { return 0.0; }
+	if (count($STUDENT_PROGRESS)==0) { return 0.0; }
+	return ( array_sum($STUDENT_PROGRESS) / count($STUDENT_PROGRESS) ) * 100;
+}
+
 function sp_presummarize($attemptobj,$questionids) {
 	$presummary=array();
 	$slots = $attemptobj->get_slots();
@@ -145,11 +160,16 @@ function sp_presummarize($attemptobj,$questionids) {
 	return $presummary;
 }
 
-function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
+function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutput=false){
 	global $COURSE;
-	global $sp_progress;
+	global $STUDENT_PROGRESS;
+	if ($STUDENT_PROGRESS===null) { $STUDENT_PROGRESS = array(); }
 	
-	$cms=get_fast_modinfo($COURSE)->get_cms();
+	if ($skipoutput) {
+		$cms=null;
+	} else {
+		$cms=get_fast_modinfo($COURSE)->get_cms();
+	}
 	
 	$out="";
 	
@@ -157,7 +177,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 		if ($block->type==STUDYPLAN_BLOCKS_TYPES_HEADER) {
 			$out.='<h2 class="studyplan-header">'.htmlentities($block->label)."</h2>";
 		} elseif ($block->type==STUDYPLAN_BLOCKS_TYPES_EVALUATE) {
-			$sp_progress[] = 1;
+			$STUDENT_PROGRESS[] = 1;
 			$mark = 0.0;
 			$value = 0.0;
 			$total = 0.0;
@@ -224,10 +244,11 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 			
 			if ( ( $style != '' ) && ( !stristr($style, 'studyplan-block-completed')) ) {
     			// this counts as completed
-    			$sp_progress[ count($sp_progress)-1 ]=0;
+    			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
 			}			
 			
-			$url = $cms[$block->activity]->get_url()->out();
+			$url="";
+			if ($cms) { $url = $cms[$block->activity]->get_url()->out(); }
 			$out.='<div class="studyplan-block '.$style.'">';
 			if ($assignbuttons) {
 				$out.='<input type="button" value="'.$assign_label.'" class="studyplan-assign-button" 
@@ -240,7 +261,50 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false){
 		}
 	}
 	
-	return $out;
+	if ($skipoutput) { return; }
+	sp_store_student_progress($studyplanid);
+	return sp_render_progress_header().sp_render_legend().$out;
+}
+
+function sp_store_student_progress($studyplanid=null,$userid=null,$percent=null) {
+	global $USER, $STUDENT, $DB;
+	if ($studyplanid===null) { return; }
+	if ($userid===null) {
+		if (isset($USER)) { $userid=$USER->id; }
+		if (isset($STUDENT)) { $userid=$STUDENT->id; }
+		if ($userid===null) { return; }
+	}
+	if ($percent===null) {
+		$percent=sp_student_progress_as_percentage();
+		if ($percent===null) { return; }
+	}
+	
+	$now=time();
+	$progress=$DB->get_record('studyplan_progress',array('studyplan'=>$studyplanid,'user'=>$userid));
+	if ($progress) {
+		#only store if the percentage has actually changed
+		if (floatval($progress->percent)!==floatval($percent)) {
+			$progress->percent=$percent;
+			$progress->timemodified=$now;
+			$DB->update_record('studyplan_progress', $progress);
+		}
+	} else {
+		$progress=new stdClass();
+		$progress->studyplan=$studyplanid;
+		$progress->user=$userid;
+		$progress->percent=$percent;
+		$progress->timecreated=$now;
+		$progress->timemodified=$now;
+		$DB->insert_record('studyplan_progress', $progress);
+	}
+}
+
+function sp_render_progress_header() {
+	return '
+		<h2 class="studyplan-progress-header">You have completed 
+		<span class="studyplan-progress-percent">' . sp_student_progress_as_percentage_text() . '</span> 
+		of your study plan.</h2>
+		';
 }
 
 function sp_render_legend() {

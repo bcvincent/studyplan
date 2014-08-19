@@ -220,17 +220,11 @@ if (isset($STUDENT)) {
 				get_string('youhavenotfinished', 'studyplan')." <a href=\"$url\">$quiz_name</a>.".
 				"</h2>"; 
 	} else {
-    	$sp_progress = array();
 		$lastfinishedattempt = end($attempts);
 		$attemptobj = quiz_attempt::create($lastfinishedattempt->id);
 		$questionids = sp_get_questionids_from_attempt($attemptobj);
 		$presummary=sp_presummarize($attemptobj,$questionids);
-		echo sp_render_legend();
-		$sp_block = sp_render_block($studyplan->id,$presummary,has_capability('mod/studyplan:assign', $context));
-		$sp_progress_percentage = ( array_sum($sp_progress) / count($sp_progress) ) * 100;
-		
-		echo '<div><h2>You have completed ' . $sp_progress_percentage . '% of your study plan.</h2></div>';
-		echo $sp_block;
+		echo sp_render_block($studyplan->id,$presummary,has_capability('mod/studyplan:assign', $context));
 	}
 }
 echo "</td>";

@@ -2,7 +2,8 @@
 /* g:009944 b:2e5eb3 */
 
 .studyplan-no-quiz { margin-top:30px; }
-.studyplan-legend { margin-top:30px; }
+.studyplan-legend { margin-top:15px; }
+.studyplan-progress-header { margin-top:30px; }
 .studyplan-example { margin-right:30px; }
 .studyplan-block { 
 	background-image: url("/mod/studyplan/pix/check.gif");

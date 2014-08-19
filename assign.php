@@ -64,6 +64,8 @@ add_to_log($course->id, 'studyplan', 'assign', "assign.php?id={$cm->id}&student=
 $PAGE->set_cacheable(false);
 
 sp_toggle_block_assigned($blockid,$studyplan->id,$studentid);
+$percent=sp_calculate_student_progress($studyplan->id,$studentid);
 
 ?>
-/* SUCCESS */
+/* SUCCESS - now set the progress percentage */
+(function() { Y.one('.studyplan-progress-percent').set('text','<?php echo $percent; ?>'); })()

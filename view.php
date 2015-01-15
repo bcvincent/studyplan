@@ -38,6 +38,7 @@ require_once(dirname(__FILE__).'/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // studyplan instance ID - it should be named as the first character of the module
+$showtabulation  = optional_param('showtabulation', 0, PARAM_INT);  // show how we calculate the math in the layout
 
 if ($id) {
     $cm         = get_coursemodule_from_id('studyplan', $id, 0, false, MUST_EXIST);
@@ -90,8 +91,8 @@ if (empty($attempts)) {
 	$lastfinishedattempt = end($attempts);
 	$attemptobj = quiz_attempt::create($lastfinishedattempt->id);
 	$questionids = sp_get_questionids_from_attempt($attemptobj);
-	$presummary=sp_presummarize($attemptobj,$questionids);
-	echo sp_render_block($studyplan->id,$presummary);
+	$presummary=sp_presummarize($attemptobj,$questionids,$showtabulation);
+	echo sp_render_block($studyplan->id,$presummary,false,false,$showtabulation);
 }
 
 // Finish the page

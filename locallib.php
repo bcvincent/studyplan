@@ -139,8 +139,13 @@ function sp_student_progress_as_percentage() {
 	return ( array_sum($STUDENT_PROGRESS) / count($STUDENT_PROGRESS) ) * 100;
 }
 
-function sp_presummarize($attemptobj,$questionids) {
+function sp_presummarize($attemptobj,$questionids,$showtabulation=0) {
 	$presummary=array();
+	if ($showtabulation) {
+		$presummary['tabulation']=array();
+		$presummary['tabulation']['questions']=array();
+		$presummary['tabulation']['tags']=array();
+	}
 	$slots = $attemptobj->get_slots();
 	foreach ($slots as $slot) {
 		if ($attemptobj->is_real_question($slot)) {
@@ -153,6 +158,22 @@ function sp_presummarize($attemptobj,$questionids) {
 				if ($mark>0) {
 					$presummary["count"]["tag"][$tag]++;
 				}
+				if ($showtabulation) {
+					if (!$presummary['tabulation']['tags'][$tag]) {
+						$presummary['tabulation']['tags'][$tag]=array();
+					}
+					$presummary['tabulation']['tags'][$tag]['name']=$tag;
+					$presummary['tabulation']['tags'][$tag]['count']=$presummary["count"]["tagtotal"][$tag];
+					$presummary['tabulation']['tags'][$tag]['questionids'].=" $qid";
+				}
+			}
+			if ($showtabulation) {
+				$question_data=array();
+				$question_data['id']=$qid;
+				$question_data['name']=sp_get_name_for_question($qid);
+				$question_data['mark']=floatval($mark);
+				$question_data['tags']=implode(',',$tags);
+				$presummary['tabulation']['questions'][]=$question_data;
 			}
 		}
 	}
@@ -160,7 +181,103 @@ function sp_presummarize($attemptobj,$questionids) {
 	return $presummary;
 }
 
-function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutput=false){
+function sp_render_presummary_tabulation($presummary){
+	$out="";
+	$out.='<h2 class="tabulation-header">Quiz Results</h2>';
+	$out.='<table class="tabulation-table">';
+		$out.='<tr>
+			<th>id</th>
+			<th>name</th>
+			<th>mark</th>
+			<th>tags</th>
+			</tr>'."\n";
+	foreach ($presummary['tabulation']['questions'] as $row) {
+		$out.='<tr>';
+		$out.='<td>'.htmlentities($row['id']).'</td>';
+		$out.='<td>'.htmlentities($row['name']).'</td>';
+		$out.='<td>'.htmlentities($row['mark']).'</td>';
+		$out.='<td>'.htmlentities($row['tags']).'</td>';
+		$out.='</tr>'."\n";
+	}
+	$out.='</table>'."\n";
+	
+	$out.='<h2 class="tabulation-header">Tag Counts</h2>';
+	$out.='<table class="tabulation-table">';
+		$out.='<tr>
+			<th>name</th>
+			<th>count</th>
+			<th>questionids</th>
+			</tr>'."\n";
+	foreach ($presummary['tabulation']['tags'] as $tag=>$row) {
+		$out.='<tr>';
+		$out.='<td>'.htmlentities($row['name']).'</td>';
+		$out.='<td>'.htmlentities($row['count']).'</td>';
+		$out.='<td>'.htmlentities($row['questionids']).'</td>';
+		$out.='</tr>'."\n";
+	}
+	$out.='</table>'."\n";
+	return $out;
+}
+
+function sp_render_block_tabulation($block) {
+	$out="";
+	$operators=sp_get_full_operators_hash();
+	$out.='<table class="tabulation-table">';
+	$out.='<tr>
+		<th>assigned</th>
+		<th>type</th>
+		<th>value</th>
+		<th>operator</th>
+		<th>compareto</th>
+		<th>comp</th>
+		<th>results</th>
+		<th>tags (keyname)</th>
+		</tr>'."\n";
+		
+	$assigned="NO";
+	$assigned_style="tabulation-show-not-assigned";
+	if (stristr($block->style, 'studyplan-block-assigned')) {
+		$assigned="YES";
+		$assigned_style="tabulation-show-assigned";
+	}
+	$out.='<tr>';
+	$out.='<td><span class="'.$assigned_style.'">'.htmlentities($assigned).'</span></td>';
+	$out.='<td>'.htmlentities($block->lookuptype).'</td>';
+	$out.='<td>'.htmlentities($block->value).'</td>';
+	$out.='<td>'.htmlentities($operators[$block->operator]).'</td>';
+	$out.='<td>'.htmlentities($block->compareto).'</td>';
+	$out.='<td>'.htmlentities($block->comparisonvalue).'</td>';
+	$out.='<td style="white-space: nowrap;">'.implode("<br>\n",explode(" ",$block->style)).'</td>';
+	$out.='<td style="white-space: nowrap;">'.implode(",<br>\n",explode(",",$block->keyname)).'</td>';
+	$out.='</tr>'."\n";
+	$out.='</table>'."\n";
+	return $out;
+}
+
+function sp_render_evaluations_tabulation($evaluations,$block) {
+	$out="";
+	$out.='<table class="tabulation-table">';
+	$out.='<tr>
+		<th>tag evaluations</th>
+		<th>mark</th>
+		<th>count</th>
+		<th>total</th>
+		<th>perc</th>
+		</tr>'."\n";
+	foreach ($evaluations['tags'] as $tag=>$row) {
+		$out.='<tr>';
+		$out.='<td>'.htmlentities($row['tag']).'</td>';
+		$out.='<td>'.htmlentities($row['mark']).'</td>';
+		$out.='<td>'.htmlentities($row['count']).'</td>';
+		$out.='<td>'.htmlentities($row['total']).'</td>';
+		$out.='<td>'.htmlentities($row['perc']).'</td>';
+		$out.='</tr>'."\n";
+	}
+	$out.='</table>'."\n";
+	return $out;
+}
+
+function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutput=false,$showtabulation=0){
 	global $COURSE;
 	global $STUDENT_PROGRESS;
 	if ($STUDENT_PROGRESS===null) { $STUDENT_PROGRESS = array(); }
@@ -173,6 +290,10 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 	
 	$out="";
 	
+	if (($showtabulation) && ($presummary['tabulation'])) {
+		$out.=sp_render_presummary_tabulation($presummary);
+	}
+	
 	foreach (sp_get_blocks($studyplanid) as $block) {
 		if ($block->type==STUDYPLAN_BLOCKS_TYPES_HEADER) {
 			$out.='<h2 class="studyplan-header">'.htmlentities($block->label)."</h2>";
@@ -183,21 +304,35 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 			$total = 0.0;
 			$count = 0.0;
 			$perc = 0.0;
+			$evaluations=array();
+			$evaluations['tags']=array();
 					
+			//logic by lookuptype
 			if ($block->lookuptype=="tag") {
 				$value = floatval($block->value);
 				$mark = 0.0;
 				$total = 0.0;
 				$count = 0.0;
 				$full_keyname=strtolower($block->keyname);
-				foreach (explode(',',$full_keyname) as $key_untrimmed) {
+				foreach (array_filter(explode(',',$full_keyname)) as $key_untrimmed) {
 					$key=trim($key_untrimmed);
-					$m = floatval($presummary["mark"]["tag"][$key]);
-					$t = floatval($presummary["count"]["tagtotal"][$key]);
-					$c = floatval($presummary["count"]["tag"][$key]);
-					if ($m>$mark) { $mark=$m; }
-					if ($t>$total) { $total=$t; }
-					if ($c>$count) { $count=$c; }
+					if ($key!="") {
+						$m = floatval($presummary["mark"]["tag"][$key]);
+						$t = floatval($presummary["count"]["tagtotal"][$key]);
+						$c = floatval($presummary["count"]["tag"][$key]);
+						if ($m>$mark) { $mark=$m; }
+						if ($t>$total) { $total=$t; }
+						if ($c>$count) { $count=$c; }
+						$evaluations['tags'][$key]["tag"]=$key;
+						$evaluations['tags'][$key]["mark"]=$mark;
+						$evaluations['tags'][$key]["total"]=$total;
+						$evaluations['tags'][$key]["count"]=$count;
+						if (($count==0) || ($total==0)) { 
+							$evaluations['tags'][$key]["perc"] = 0.0; 
+						} else {
+							$evaluations['tags'][$key]["perc"] = 100.0*$count/$total;
+						}
+					}
 				}
 				
 				if (($count==0) || ($total==0)) { 
@@ -227,6 +362,12 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 			} else if (($block->operator=="gte") && ($mark>=$value)) {
 				$style.="studyplan-block-assigned ";
 			}
+			$block->compareto="mark";
+			$block->comparisonvalue=$mark;
+			if (substr($block->operator,-1)=="p") { 
+				$block->compareto="percent"; 
+				$block->comparisonvalue=$perc;
+			}
 			
 			//teacher-assigned
 			$assign_label="Assign";
@@ -251,6 +392,9 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
     			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
 			}	
 			
+			$block->style=$style;
+			$evaluations['style']=$style;
+			
 			$url="";
 			if ($cms) { $url = $cms[$block->activity]->get_url()->out(); }
 			$out.='<div class="studyplan-block '.$style.'">';
@@ -261,6 +405,12 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 				$out.="\n";
 			}
 			$out.='<a href="'.htmlentities($url).'">'.htmlentities($block->label).'</a>';
+	
+			if ((!$skipoutput) && ($showtabulation)) {
+				$out.=sp_render_block_tabulation($block);
+				$out.=sp_render_evaluations_tabulation($evaluations,$block);
+			}
+			
 			$out.='</div>';
 		}
 	}
@@ -395,6 +545,28 @@ function sp_get_tags_for_question($qid) {
 		if ($results!==false) {
 			foreach ($results as $r) { array_push($out,$r->name); }
 		}
+	}
+	return $out;
+}
+
+function sp_get_name_for_question($qid) {
+	global $DB;
+	$sql="SELECT name FROM {question} WHERE id = $qid";
+	$result = $DB->get_record_sql($sql);
+	if ($result!==false) {
+		return $result->name;
+	}
+	return "";
+}
+
+function sp_get_names_for_questions($qids) {
+	global $DB;
+	$out=array();
+	$conditions_joined=join(',',$qids);
+	$sql="SELECT name FROM {question} WHERE id in ( $conditions_joined )";
+	$results = $DB->get_records_sql($sql);
+	if ($results!==false) {
+		foreach ($results as $r) { array_push($out,$r->name); }
 	}
 	return $out;
 }

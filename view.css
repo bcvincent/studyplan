@@ -55,3 +55,18 @@
 .studyplan-assign-button {
 	width:70px;
 }
+
+
+.tabulation-table {
+	border: solid 1px #000;
+	color: #000;
+}
+.tabulation-table tr, .tabulation-table td, .tabulation-table th {
+	border: solid 1px #000;
+}
+.tabulation-show-assigned {
+	color: #009944;
+}
+.tabulation-show-not-assigned {
+	color: #c00;
+}

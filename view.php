@@ -92,7 +92,7 @@ if (empty($attempts)) {
 	$attemptobj = quiz_attempt::create($lastfinishedattempt->id);
 	$questionids = sp_get_questionids_from_attempt($attemptobj);
 	$presummary=sp_presummarize($attemptobj,$questionids,$showtabulation);
-	echo sp_render_block($studyplan->id,$presummary,false,false,$showtabulation);
+	echo sp_render_block($studyplan->id,$presummary,false,false,$showtabulation,"student");
 }
 
 // Finish the page

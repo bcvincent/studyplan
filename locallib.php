@@ -155,6 +155,10 @@ function sp_presummarize($attemptobj,$questionids,$showtabulation=0) {
 			foreach ($tags as $tag) {
 				$presummary["mark"]["tag"][$tag]+=$mark;
 				$presummary["count"]["tagtotal"][$tag]++;
+				$presummary["quest"]["tag"][$tag][]=$qid; //b
+				$presummary["tag"][$tag]["mark"][]=$mark; 
+				$presummary["tag"][$tag]["quest"][]=$qid; 
+
 				if ($mark>0) {
 					$presummary["count"]["tag"][$tag]++;
 				}
@@ -166,6 +170,7 @@ function sp_presummarize($attemptobj,$questionids,$showtabulation=0) {
 					$presummary['tabulation']['tags'][$tag]['count']=$presummary["count"]["tagtotal"][$tag];
 					$presummary['tabulation']['tags'][$tag]['questionids'].=" $qid";
 				}
+				
 			}
 			if ($showtabulation) {
 				$question_data=array();
@@ -260,7 +265,6 @@ function sp_render_evaluations_tabulation($evaluations,$block) {
 	$out.='<tr>
 		<th>tag evaluations</th>
 		<th>mark</th>
-		<th>count</th>
 		<th>total</th>
 		<th>perc</th>
 		</tr>'."\n";
@@ -268,7 +272,6 @@ function sp_render_evaluations_tabulation($evaluations,$block) {
 		$out.='<tr>';
 		$out.='<td>'.htmlentities($row['tag']).'</td>';
 		$out.='<td>'.htmlentities($row['mark']).'</td>';
-		$out.='<td>'.htmlentities($row['count']).'</td>';
 		$out.='<td>'.htmlentities($row['total']).'</td>';
 		$out.='<td>'.htmlentities($row['perc']).'</td>';
 		$out.='</tr>'."\n";
@@ -277,10 +280,13 @@ function sp_render_evaluations_tabulation($evaluations,$block) {
 	return $out;
 }
 
-function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutput=false,$showtabulation=0){
+function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutput=false,$showtabulation=0,$userr){
 	global $COURSE;
 	global $STUDENT_PROGRESS;
 	if ($STUDENT_PROGRESS===null) { $STUDENT_PROGRESS = array(); }
+	
+
+		
 	
 	if ($skipoutput) {
 		$cms=null;
@@ -298,7 +304,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 		if ($block->type==STUDYPLAN_BLOCKS_TYPES_HEADER) {
 			$out.='<h2 class="studyplan-header">'.htmlentities($block->label)."</h2>";
 		} elseif ($block->type==STUDYPLAN_BLOCKS_TYPES_EVALUATE) {
-			$STUDENT_PROGRESS[] = 1;
+			$STUDENT_PROGRESS[] = 0;
 			$mark = 0.0;
 			$value = 0.0;
 			$total = 0.0;
@@ -313,35 +319,49 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 				$mark = 0.0;
 				$total = 0.0;
 				$count = 0.0;
+				$usedqs = array(); //bcv
 				$full_keyname=strtolower($block->keyname);
 				foreach (array_filter(explode(',',$full_keyname)) as $key_untrimmed) {
 					$key=trim($key_untrimmed);
 					if ($key!="") {
-						$m = floatval($presummary["mark"]["tag"][$key]);
-						$t = floatval($presummary["count"]["tagtotal"][$key]);
+						$m = 0;
+						$t = 0;
+							
+							for ($i = 0; $i < count($presummary["tag"][$key]["quest"]); $i++) {
+								if (!in_array($presummary["tag"][$key]["quest"][$i], $usedqs)) {
+									$usedqs[] = $presummary["tag"][$key]["quest"][$i];
+									$m += floatval($presummary["tag"][$key]["mark"][$i]);
+									$t += 1;								}
+								else{
+								}
+
+							}
+					
 						$c = floatval($presummary["count"]["tag"][$key]);
-						if ($m>$mark) { $mark=$m; }
-						if ($t>$total) { $total=$t; }
-						if ($c>$count) { $count=$c; }
+						$mark+=$m;
+						$total+=$t;
+						$count+=$c;
+											
 						$evaluations['tags'][$key]["tag"]=$key;
 						$evaluations['tags'][$key]["mark"]=$mark;
 						$evaluations['tags'][$key]["total"]=$total;
 						$evaluations['tags'][$key]["count"]=$count;
-						if (($count==0) || ($total==0)) { 
+						if (($mark==0) || ($total==0)) { 
 							$evaluations['tags'][$key]["perc"] = 0.0; 
 						} else {
-							$evaluations['tags'][$key]["perc"] = 100.0*$count/$total;
+							$evaluations['tags'][$key]["perc"] = 100.0*$mark/$total;
 						}
 					}
 				}
 				
-				if (($count==0) || ($total==0)) { 
+				if (($mark==0) || ($total==0)) { 
 					$perc = 0.0; 
 				} else {
-					$perc = 100.0*$count/$total;
+					$perc = 100.0*$mark/$total;
 				}
 			}
-				
+			
+	
 			$style="";
 			
 			//assigned
@@ -369,29 +389,64 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 				$block->comparisonvalue=$perc;
 			}
 			
-			//teacher-assigned
-			$assign_label="Assign";
-			$assigned_data="0";
-			if (sp_get_block_assigned($block->id,$studyplanid)) {
-				$style.="studyplan-block-teacher-assigned ";
-				$assign_label="Remove";
-				$assigned_data="1";
+			if($userr=="student"){
+				
+				//teacher-assigned
+				$assign_label="Assign";
+				$assigned_data="0";
+				if (sp_get_block_assigned($block->id,$studyplanid)) {
+					$style.="studyplan-block-teacher-assigned ";
+					$assign_label="Remove";
+					$assigned_data="1";
+				}
+				
+				//completed	
+				else if (sp_get_activity_completed($block->completionactivity)) {
+					$style.="studyplan-block-completed ";
+				}
+				
+				$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ] = 1;
+				
+				if ( ( $style != '' ) && ( !stristr($style, 'studyplan-block-completed')) ) {
+					// this counts as not completed because it isn't flagged as studyplan-block-completed
+					$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
+				}
+				if ( ( $style != '' ) && ( stristr($style, 'studyplan-block-teacher-assigned')) ) {
+					// this counts as not completed because the teacher is forcing the assignment
+					$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
+				}	
+				
+				
+				if ( ( !stristr($style, 'assigned')) ) { 
+					$style.="studyplan-block-checked ";
+				}
 			}
-			
-			//completed	
-			if (sp_get_activity_completed($block->completionactivity)) {
-				$style.="studyplan-block-completed ";
+			else if ($userr=="teacher"){
+				
+				//completed	
+				if (sp_get_activity_completed($block->completionactivity)) {
+					//$style.="studyplan-block-completed ";
+					$style.="studyplan-block-checked ";
+
+				}
+				
+				//teacher-assigned
+				$assign_label="Assign";
+				$assigned_data="0";
+				if (sp_get_block_assigned($block->id,$studyplanid)) {
+					$style.="studyplan-block-teacher-assigned ";				
+					$assign_label="Remove";
+					$assigned_data="1";
+				}
+				
+				
+				if ( ( $style != '' ) && (( stristr($style, 'studyplan-block-checked')) &&  ( !stristr($style, 'studyplan-block-teacher-assigned')))) {
+					$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=1;
+				}
 			}
-			
-			if ( ( $style != '' ) && ( !stristr($style, 'studyplan-block-completed')) ) {
-    			// this counts as not completed because it isn't flagged as studyplan-block-completed
-    			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
+			else{
 			}
-			if ( ( $style != '' ) && ( stristr($style, 'studyplan-block-teacher-assigned')) ) {
-    			// this counts as not completed because the teacher is forcing the assignment
-    			$STUDENT_PROGRESS[ count($STUDENT_PROGRESS)-1 ]=0;
-			}	
-			
+						
 			$block->style=$style;
 			$evaluations['style']=$style;
 			
@@ -407,6 +462,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 			$out.='<a href="'.htmlentities($url).'">'.htmlentities($block->label).'</a>';
 	
 			if ((!$skipoutput) && ($showtabulation)) {
+				$out.="Percentage of questions in this section correct: ".$perc." ";
 				$out.=sp_render_block_tabulation($block);
 				$out.=sp_render_evaluations_tabulation($evaluations,$block);
 			}
@@ -417,7 +473,8 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 	
 	if ($skipoutput) { return; }
 	sp_store_student_progress($studyplanid);
-	return sp_render_progress_header().sp_render_legend().$out;
+	//return sp_render_progress_header().sp_render_legend().$out;
+	return sp_render_legend($userr).$out;
 }
 
 function sp_calculate_student_progress($studyplanid=null,$userid=null,$store=true,$gettext=true) {
@@ -490,11 +547,33 @@ function sp_render_progress_header() {
 		';
 }
 
-function sp_render_legend() {
-	return '
+function sp_render_legend($userr) {
+	if($userr=="teacher"){
+		return '
+			<table class="studyplan-legend">
+				<tr>
+					<td><div class="studyplan-block studyplan-block-completed studyplan-example">
+						' . get_string('completedS', 'studyplan') . '
+					</div></td>
+					<td><div class="studyplan-block studyplan-block-unassigned studyplan-example">
+						' . get_string('unassigned', 'studyplan') . '
+					</div></td>
+					<td><div class="studyplan-block studyplan-block-assigned studyplan-example">
+						' . get_string('assignedbytest', 'studyplan') . '
+					</div></td>
+					<td><div class="studyplan-block studyplan-block-teacher-assigned studyplan-example">
+						' . get_string('assignedbyteacher', 'studyplan') . '
+					</div></td>
+				</tr>
+			</table>
+		';
+	}
+	
+	else{
+		return '
 		<table class="studyplan-legend">
 			<tr>
-				<td><div class="studyplan-block studyplan-example">
+				<td><div class="studyplan-block studyplan-block-completed studyplan-example">
 				    ' . get_string('completed', 'studyplan') . '
 				</div></td>
 				<td><div class="studyplan-block studyplan-block-assigned studyplan-example">
@@ -506,6 +585,8 @@ function sp_render_legend() {
 			</tr>
 		</table>
 	';
+	}
+	
 }
 
 function sp_get_questionids_from_attempt($attemptobj) {

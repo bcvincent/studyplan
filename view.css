@@ -6,11 +6,17 @@
 .studyplan-progress-header { margin-top:30px; }
 .studyplan-example { margin-right:30px; }
 .studyplan-block { 
-	background-image: url("/mod/studyplan/pix/check.gif");
+	/*background-image: url("/mod/studyplan/pix/check.gif");*/
 	background-repeat: no-repeat;
 	background-position: 0px, 0px; 
 	padding-left:20px; 
 	color: #000;
+}
+.studyplan-example.studyplan-block-completed { 
+	background-image: url("/mod/studyplan/pix/check.gif");
+}
+.studyplan-example.studyplan-block-unassigned { 
+	background-image: url("/mod/studyplan/pix/black.gif");
 }
 .studyplan-example.studyplan-block-assigned { 
 	background-image: url("/mod/studyplan/pix/green.gif");
@@ -36,10 +42,14 @@
 	padding-left:20px; 
 	color: #000;
 }
+
+.studyplan-block-checked {
+	background-image: url("/mod/studyplan/pix/check.gif");
+}
 .studyplan-block-completed a { color: #000; }
 .studyplan-block-completed a:hover { color: #f00; }
 
-.studyplan-block-teacher-assigned { color: #2e5eb3; background-image: none; }
+.studyplan-block-teacher-assigned { color: #2e5eb3; }
 .studyplan-block-teacher-assigned a { color: #2e5eb3; }
 .studyplan-block-teacher-assigned a:hover { color: #f00; }
 

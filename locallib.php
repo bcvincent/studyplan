@@ -153,22 +153,22 @@ function sp_presummarize($attemptobj,$questionids,$showtabulation=0) {
 			$tags=sp_get_tags_for_question($qid);
 			$mark=$attemptobj->get_question_mark($slot);
 			foreach ($tags as $tag) {
-				$presummary["mark"]["tag"][$tag]+=$mark;
-				$presummary["count"]["tagtotal"][$tag]++;
-				$presummary["quest"]["tag"][$tag][]=$qid; //b
-				$presummary["tag"][$tag]["mark"][]=$mark; 
-				$presummary["tag"][$tag]["quest"][]=$qid; 
+				@$presummary["mark"]["tag"][$tag]+=$mark;
+				@$presummary["count"]["tagtotal"][$tag]++;
+				@$presummary["quest"]["tag"][$tag][]=$qid; //b
+				@$presummary["tag"][$tag]["mark"][]=$mark; 
+				@$presummary["tag"][$tag]["quest"][]=$qid; 
 
 				if ($mark>0) {
-					$presummary["count"]["tag"][$tag]++;
+					@$presummary["count"]["tag"][$tag]++;
 				}
 				if ($showtabulation) {
 					if (!$presummary['tabulation']['tags'][$tag]) {
-						$presummary['tabulation']['tags'][$tag]=array();
+						@$presummary['tabulation']['tags'][$tag]=array();
 					}
-					$presummary['tabulation']['tags'][$tag]['name']=$tag;
-					$presummary['tabulation']['tags'][$tag]['count']=$presummary["count"]["tagtotal"][$tag];
-					$presummary['tabulation']['tags'][$tag]['questionids'].=" $qid";
+					@$presummary['tabulation']['tags'][$tag]['name']=$tag;
+					@$presummary['tabulation']['tags'][$tag]['count']=$presummary["count"]["tagtotal"][$tag];
+					@$presummary['tabulation']['tags'][$tag]['questionids'].=" $qid";
 				}
 				
 			}
@@ -178,7 +178,7 @@ function sp_presummarize($attemptobj,$questionids,$showtabulation=0) {
 				$question_data['name']=sp_get_name_for_question($qid);
 				$question_data['mark']=floatval($mark);
 				$question_data['tags']=implode(',',$tags);
-				$presummary['tabulation']['questions'][]=$question_data;
+				@$presummary['tabulation']['questions'][]=$question_data;
 			}
 		}
 	}
@@ -327,7 +327,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 						$m = 0;
 						$t = 0;
 							
-							for ($i = 0; $i < count($presummary["tag"][$key]["quest"]); $i++) {
+							for ($i = 0; $i < count(@$presummary["tag"][$key]["quest"]); $i++) {
 								if (!in_array($presummary["tag"][$key]["quest"][$i], $usedqs)) {
 									$usedqs[] = $presummary["tag"][$key]["quest"][$i];
 									$m += floatval($presummary["tag"][$key]["mark"][$i]);
@@ -337,7 +337,7 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 
 							}
 					
-						$c = floatval($presummary["count"]["tag"][$key]);
+						$c = floatval(@$presummary["count"]["tag"][$key]);
 						$mark+=$m;
 						$total+=$t;
 						$count+=$c;
@@ -451,7 +451,10 @@ function sp_render_block($studyplanid,$presummary,$assignbuttons=false,$skipoutp
 			$evaluations['style']=$style;
 			
 			$url="";
-			if ($cms) { $url = $cms[$block->activity]->get_url()->out(); }
+			if ($cms) { 
+				$url = $cms[$block->activity]->url->out(); 
+			
+			}
 			$out.='<div class="studyplan-block '.$style.'">';
 			if ($assignbuttons) {
 				$out.='<input type="button" value="'.$assign_label.'" class="studyplan-assign-button" 
@@ -590,13 +593,27 @@ function sp_render_legend($userr) {
 }
 
 function sp_get_questionids_from_attempt($attemptobj) {
-	# based on mod/quiz/attemptlib.php - line 91
+	/*# based on mod/quiz/attemptlib.php - line 91
 	$questionids=quiz_questions_in_quiz($attemptobj->get_quiz()->questions);
 	if ($questionids) { 
 		$questionids = explode(',', $questionids);
 	} else {
 		$questionids = array(); 
 	}
+	return $questionids;*/
+	
+	global $DB;
+	
+	$questionids = array();
+	$temp_slots = $attemptobj->get_quiz()->id;
+	$sql="SELECT questionid FROM {quiz_slots} WHERE quizid = $temp_slots";
+	$results = $DB->get_records_sql($sql);
+
+	if ($results!==false) {
+		foreach ($results as $r) { array_push($questionids,$r->questionid); }
+	}
+	else{}
+	
 	return $questionids;
 }
 
